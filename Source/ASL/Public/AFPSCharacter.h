@@ -57,6 +57,8 @@ public:
 
 	bool bLBclicked;
 	bool bRBclicked;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bIsBirdView;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

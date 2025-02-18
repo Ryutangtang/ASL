@@ -23,8 +23,7 @@ AAFPSCharacter::AAFPSCharacter()
 	bLBclicked = false;
 	bIsBirdView = true;
 
-	GetCharacterMovement()->bConstrainToPlane = false;
-	GetCharacterMovement()->bUseFlatBaseForFloorChecks = true;
+	
 }
 
 // Called when the game starts or when spawned
@@ -44,7 +43,8 @@ void AAFPSCharacter::BeginPlay()
 	}
 	pc->SetShowMouseCursor(true);
 
-	
+	GetCharacterMovement()->bConstrainToPlane = false;
+	GetCharacterMovement()->bUseFlatBaseForFloorChecks = true;
 
 }
 
@@ -86,6 +86,7 @@ void AAFPSCharacter::Move(const FInputActionValue& Value)
 	{
 		if(bIsBirdView!=true)
 		{
+			GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
 			AddMovementInput(GetActorForwardVector(), walkSpeed * MoveVector.Y);
 			AddMovementInput(GetActorRightVector(), walkSpeed * MoveVector.X);
 
