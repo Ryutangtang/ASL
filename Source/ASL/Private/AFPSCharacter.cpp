@@ -45,7 +45,7 @@ void AAFPSCharacter::BeginPlay()
 
 	GetCharacterMovement()->bConstrainToPlane = false;
 	GetCharacterMovement()->bUseFlatBaseForFloorChecks = true;
-
+	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Flying);
 }
 
 // Called every frame
@@ -113,8 +113,8 @@ void AAFPSCharacter::Look(const FInputActionValue& Value)
 			//AddMovementInput(GetActorRightVector(), mouseWalkSpeed * MouseMove.X);
 			//UE_LOG(LogTemp, Warning, TEXT("MouseMove Function Called - X: %f, Y: %f"), MouseMove.X, MouseMove.Y);
 			FVector NewLocation = GetActorLocation() +
-				(GetActorUpVector() * MouseMove.Y * mouseWalkSpeed) +
-				(GetActorRightVector() * MouseMove.X * mouseWalkSpeed);
+				(cameraComp->GetUpVector() * -MouseMove.Y * mouseWalkSpeed) +
+				(GetActorRightVector() * -MouseMove.X * mouseWalkSpeed);
 
 			SetActorLocation(NewLocation, true);
 
@@ -141,7 +141,7 @@ void AAFPSCharacter::LB_Click(const FInputActionValue& Value)
 void AAFPSCharacter::Zoom(const FInputActionValue& Value)
 {
 	FVector wheelMove = Value.Get<FVector>();
-	FVector NewLocation = GetActorLocation() + (GetActorForwardVector() * mouseWalkSpeed * wheelMove.X);
+	FVector NewLocation = GetActorLocation() + (cameraComp->GetForwardVector() * mouseWalkSpeed * wheelMove.X);
 
 	SetActorLocation(NewLocation, true);
 
