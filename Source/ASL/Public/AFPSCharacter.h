@@ -31,16 +31,16 @@ public:
 	class UCameraComponent* cameraComp;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	class UInputAction* ia_move;
+	class UInputAction* ia_Move;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	class UInputAction* ia_rotate;
+	class UInputAction* ia_Rotate;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	class UInputAction* ia_LBclick;
+	class UInputAction* ia_LBClick;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	class UInputAction* ia_RBclick;
+	class UInputAction* ia_RBClick;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UInputAction* ia_Zoom;
@@ -66,6 +66,12 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float mouseWalkSpeed = 10;
+
+	UFUNCTION(BlueprintCallable)
+	void SetBirdMode();
+
+	UFUNCTION(BlueprintCallable)
+	void SetFPSMode();
 
 
 

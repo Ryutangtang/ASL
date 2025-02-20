@@ -18,12 +18,9 @@ AAFPSCharacter::AAFPSCharacter()
 	cameraComp->SetupAttachment(GetCapsuleComponent());
 	cameraComp->bUsePawnControlRotation = true;
 
-
 	bRBclicked = false;
 	bLBclicked = false;
-	bIsBirdView = true;
 
-	
 }
 
 // Called when the game starts or when spawned
@@ -43,9 +40,7 @@ void AAFPSCharacter::BeginPlay()
 	}
 	pc->SetShowMouseCursor(true);
 
-	GetCharacterMovement()->bConstrainToPlane = false;
-	GetCharacterMovement()->bUseFlatBaseForFloorChecks = true;
-	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Flying);
+	SetBirdMode();
 }
 
 // Called every frame
@@ -60,19 +55,17 @@ void AAFPSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	//UE_LOG(LogTemp, Warning, TEXT("Call InputAction Play"));
-
 	UEnhancedInputComponent* enhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent);
 	if (enhancedInputComponent)
 	{
-		enhancedInputComponent->BindAction(ia_move, ETriggerEvent::Triggered, this, &AAFPSCharacter::Move);
-		enhancedInputComponent->BindAction(ia_rotate, ETriggerEvent::Triggered, this, &AAFPSCharacter::Look);
-		enhancedInputComponent->BindAction(ia_RBclick, ETriggerEvent::Started, this, &AAFPSCharacter::RB_Click);
-		enhancedInputComponent->BindAction(ia_RBclick, ETriggerEvent::Completed, this, &AAFPSCharacter::RB_Click);
-		enhancedInputComponent->BindAction(ia_LBclick, ETriggerEvent::Started, this, &AAFPSCharacter::LB_Click);
-		enhancedInputComponent->BindAction(ia_LBclick, ETriggerEvent::Completed, this, &AAFPSCharacter::LB_Click);
+		enhancedInputComponent->BindAction(ia_Move, ETriggerEvent::Triggered, this, &AAFPSCharacter::Move);
+		enhancedInputComponent->BindAction(ia_Rotate, ETriggerEvent::Triggered, this, &AAFPSCharacter::Look);
+		enhancedInputComponent->BindAction(ia_RBClick, ETriggerEvent::Started, this, &AAFPSCharacter::RB_Click);
+		enhancedInputComponent->BindAction(ia_RBClick, ETriggerEvent::Completed, this, &AAFPSCharacter::RB_Click);
+		enhancedInputComponent->BindAction(ia_LBClick, ETriggerEvent::Started, this, &AAFPSCharacter::LB_Click);
+		enhancedInputComponent->BindAction(ia_LBClick, ETriggerEvent::Completed, this, &AAFPSCharacter::LB_Click);
 		enhancedInputComponent->BindAction(ia_Zoom, ETriggerEvent::Triggered, this, &AAFPSCharacter::Zoom);
-		UE_LOG(LogTemp, Warning, TEXT("InputSet"));
+
 	}
 
 }
@@ -84,9 +77,9 @@ void AAFPSCharacter::Move(const FInputActionValue& Value)
 
 	if (Controller)
 	{
-		if(bIsBirdView!=true)
+		if(bIsBirdView==false)
 		{
-			GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+
 			AddMovementInput(GetActorForwardVector(), walkSpeed * MoveVector.Y);
 			AddMovementInput(GetActorRightVector(), walkSpeed * MoveVector.X);
 
@@ -101,23 +94,19 @@ void AAFPSCharacter::Look(const FInputActionValue& Value)
 		FVector2D LookAxisVector = Value.Get<FVector2D>();
 		AddControllerYawInput(LookAxisVector.X);
 		AddControllerPitchInput(-LookAxisVector.Y);
-		UE_LOG(LogTemp, Warning, TEXT("Look Function Called - X: %f, Y: %f"), LookAxisVector.X, LookAxisVector.Y);
+		
 	}
 	if(bIsBirdView)
 	{
 		if (bLBclicked)
 		{
-			GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Flying);
+			
 			FVector2D MouseMove = Value.Get<FVector2D>();
-			//AddMovementInput(GetActorUpVector(), mouseWalkSpeed * MouseMove.Y);
-			//AddMovementInput(GetActorRightVector(), mouseWalkSpeed * MouseMove.X);
-			//UE_LOG(LogTemp, Warning, TEXT("MouseMove Function Called - X: %f, Y: %f"), MouseMove.X, MouseMove.Y);
 			FVector NewLocation = GetActorLocation() +
 				(cameraComp->GetUpVector() * -MouseMove.Y * mouseWalkSpeed) +
 				(GetActorRightVector() * -MouseMove.X * mouseWalkSpeed);
 
 			SetActorLocation(NewLocation, true);
-
 
 		}
 	}
@@ -127,22 +116,47 @@ void AAFPSCharacter::Look(const FInputActionValue& Value)
 void AAFPSCharacter::RB_Click(const FInputActionValue& Value)
 {
 	bRBclicked = Value.Get<bool>();
-	UE_LOG(LogTemp, Warning, TEXT("RB_Click called - bRBclicked: %s"), bRBclicked ? TEXT("TRUE") : TEXT("FALSE"));
+	
 }
 
 void AAFPSCharacter::LB_Click(const FInputActionValue& Value)
 {
 
 	bLBclicked = Value.Get<bool>();
-	UE_LOG(LogTemp, Warning, TEXT("LB_Click called - bLBclicked: %s"), bLBclicked ? TEXT("TRUE") : TEXT("FALSE"));
 
 }
 
 void AAFPSCharacter::Zoom(const FInputActionValue& Value)
 {
-	FVector wheelMove = Value.Get<FVector>();
-	FVector NewLocation = GetActorLocation() + (cameraComp->GetForwardVector() * mouseWalkSpeed * wheelMove.X);
+	
+	if(bIsBirdView)
+	{
 
-	SetActorLocation(NewLocation, true);
+		FVector wheelMove = Value.Get<FVector>();
+		FVector NewLocation = GetActorLocation() + (cameraComp->GetForwardVector() * mouseWalkSpeed * wheelMove.X);
 
+		SetActorLocation(NewLocation, true);
+
+	}
+
+}
+
+void AAFPSCharacter::SetBirdMode()
+{
+
+	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Flying);
+	bIsBirdView = true;
+	GetCharacterMovement()->bConstrainToPlane = false;
+	GetCharacterMovement()->bUseFlatBaseForFloorChecks = true;
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
+void AAFPSCharacter::SetFPSMode()
+{
+
+	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+	bIsBirdView = false;
+	GetCharacterMovement()->bConstrainToPlane = true;
+	GetCharacterMovement()->bUseFlatBaseForFloorChecks = false;
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 }
