@@ -28,17 +28,16 @@ void AAFPSCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	APlayerController* pc = GetWorld()->GetFirstPlayerController();
+	APlayerController* PC = GetWorld()->GetFirstPlayerController();
 
+	ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer());
 
-
-	ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(pc->GetLocalPlayer());
-	if (UEnhancedInputLocalPlayerSubsystem* InputSubsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(pc->GetLocalPlayer()))
+	if (UEnhancedInputLocalPlayerSubsystem* InputSubsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer()))
 	{
-		UEnhancedInputLocalPlayerSubsystem* subsys = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(pc->GetLocalPlayer());
-		subsys->AddMappingContext(imc_FPSmapping, 0);
+		UEnhancedInputLocalPlayerSubsystem* Subsys = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer());
+		Subsys->AddMappingContext(imc_FPSmapping, 0);
 	}
-	pc->SetShowMouseCursor(true);
+	PC->SetShowMouseCursor(true);
 
 	SetBirdMode();
 }
@@ -56,18 +55,19 @@ void AAFPSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	UEnhancedInputComponent* enhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent);
+
 	if (enhancedInputComponent)
 	{
 		enhancedInputComponent->BindAction(ia_Move, ETriggerEvent::Triggered, this, &AAFPSCharacter::Move);
 		enhancedInputComponent->BindAction(ia_Rotate, ETriggerEvent::Triggered, this, &AAFPSCharacter::Look);
-		enhancedInputComponent->BindAction(ia_RBClick, ETriggerEvent::Started, this, &AAFPSCharacter::RB_Click);
-		enhancedInputComponent->BindAction(ia_RBClick, ETriggerEvent::Completed, this, &AAFPSCharacter::RB_Click);
-		enhancedInputComponent->BindAction(ia_LBClick, ETriggerEvent::Started, this, &AAFPSCharacter::LB_Click);
-		enhancedInputComponent->BindAction(ia_LBClick, ETriggerEvent::Completed, this, &AAFPSCharacter::LB_Click);
 		enhancedInputComponent->BindAction(ia_Zoom, ETriggerEvent::Triggered, this, &AAFPSCharacter::Zoom);
 
+		enhancedInputComponent->BindAction(ia_RBClick, ETriggerEvent::Started, this, &AAFPSCharacter::RB_Click);
+		enhancedInputComponent->BindAction(ia_RBClick, ETriggerEvent::Completed, this, &AAFPSCharacter::RB_Click);
+		
+		enhancedInputComponent->BindAction(ia_LBClick, ETriggerEvent::Started, this, &AAFPSCharacter::LB_Click);
+		enhancedInputComponent->BindAction(ia_LBClick, ETriggerEvent::Completed, this, &AAFPSCharacter::LB_Click);
 	}
-
 }
 
 
@@ -77,7 +77,7 @@ void AAFPSCharacter::Move(const FInputActionValue& Value)
 
 	if (Controller)
 	{
-		if(bIsBirdView==false)
+		if(!bIsBirdView)
 		{
 
 			AddMovementInput(GetActorForwardVector(), walkSpeed * MoveVector.Y);
