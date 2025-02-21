@@ -23,10 +23,19 @@ public:
 	UFUNCTION()
 	void DHOnTextChanged(const FText& Text);
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void DHOnTextCommitted(const FText& Text, ETextCommit::Type CommitMethod);
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FString sDHString;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	FString sDong;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	FString sFloor;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	FString sHoe;
 
 };
