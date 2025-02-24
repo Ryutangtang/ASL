@@ -67,6 +67,12 @@ void AAFPSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 		
 		enhancedInputComponent->BindAction(ia_LBClick, ETriggerEvent::Started, this, &AAFPSCharacter::LB_Click);
 		enhancedInputComponent->BindAction(ia_LBClick, ETriggerEvent::Completed, this, &AAFPSCharacter::LB_Click);
+
+		enhancedInputComponent->BindAction(ia_SpeedUp, ETriggerEvent::Started, this, &AAFPSCharacter::SpeedUp);
+		enhancedInputComponent->BindAction(ia_SpeedUp, ETriggerEvent::Completed, this, &AAFPSCharacter::SpeedUp);
+
+		enhancedInputComponent->BindAction(ia_SlowDown, ETriggerEvent::Started, this, &AAFPSCharacter::SlowDown);
+		enhancedInputComponent->BindAction(ia_SlowDown, ETriggerEvent::Completed, this, &AAFPSCharacter::SlowDown);
 	}
 }
 
@@ -137,6 +143,36 @@ void AAFPSCharacter::Zoom(const FInputActionValue& Value)
 
 		SetActorLocation(NewLocation, true);
 
+	}
+
+}
+
+void AAFPSCharacter::SpeedUp(const FInputActionValue& Value)
+{
+
+	bIsSplint = Value.Get<bool>();
+	if (bIsSplint)
+	{
+		walkSpeed = 10;
+	}
+	else
+	{
+		walkSpeed = 1;
+	}
+
+}
+
+void AAFPSCharacter::SlowDown(const FInputActionValue& Value)
+{
+
+	bIsSlowdown = Value.Get<bool>();
+	if (bIsSlowdown)
+	{
+		mouseWalkSpeed = 10;
+	}
+	else
+	{
+		mouseWalkSpeed = 100;
 	}
 
 }

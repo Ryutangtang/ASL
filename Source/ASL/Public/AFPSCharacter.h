@@ -46,6 +46,12 @@ public:
 	class UInputAction* ia_Zoom;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UInputAction* ia_SpeedUp;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UInputAction* ia_SlowDown;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UInputMappingContext* imc_FPSmapping;
 
 
@@ -53,10 +59,14 @@ public:
 	void Look(const FInputActionValue& Value);
 	void RB_Click(const FInputActionValue& Value);
 	void LB_Click(const FInputActionValue& Value);
-	void Zoom(const FInputActionValue& Value);
+	void Zoom(const FInputActionValue& Value);	
+	void SpeedUp(const FInputActionValue& Value);
+	void SlowDown(const FInputActionValue& Value);
 
 	bool bLBclicked;
 	bool bRBclicked;
+	bool bIsSplint;
+	bool bIsSlowdown;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bIsBirdView;
@@ -65,7 +75,7 @@ public:
 	float walkSpeed = 1;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float mouseWalkSpeed = 10;
+	float mouseWalkSpeed = 100;
 
 	UFUNCTION(BlueprintCallable)
 	void SetBirdMode();
